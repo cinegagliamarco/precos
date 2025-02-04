@@ -1,0 +1,43 @@
+# Ignore declaration files
+*.d.ts
+
+# Ignore source maps
+*.js.map
+*.mjs.map
+
+# Ignore node_modules
+node_modules/
+
+# Ignore build directories
+dist/
+build/
+out/
+
+# Ignore logs
+*.log
+yarn-debug.log*
+npm-debug.log*
+pnpm-debug.log*
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore cache directories
+.cache/
+.nyc_output/
+coverage/
+temp/
+tmp/
+
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore package lock files if using Yarn or pnpm
+yarn.lock
+pnpm-lock.yaml
