@@ -1,16 +1,14 @@
 import * as fs from 'fs';
+import { Repository } from 'typeorm';
+import { BaseProduct } from '../database/base-product.entity';
 import { TypeOrmDataSource } from '../database/typeorm-datasource';
-import { Product } from '../database/product.entity';
 
 async function readCSV(filePath: string): Promise<void> {
   const data = fs.readFileSync(filePath, { encoding: 'utf8' });
   const rows = data.split(/\r?\n/);
 
   await initializeDB();
-  // You can now start interacting with your database, for example:
-  const productRepository = TypeOrmDataSource.getRepository(Product);
-  const products = await productRepository.find();
-  console.log(products);
+  const productRepository = TypeOrmDataSource.getRepository(BaseProduct);
 
   for (let index = 0; index < rows.length; index++) {
     if (!index) continue; // Skip first line (header)
@@ -22,16 +20,32 @@ async function readCSV(filePath: string): Promise<void> {
       (value) => value.replace(/^"|"$/g, '').trim(), // Remove surrounding quotes and trim
     );
 
-    const [ean, name, _, __, price] = parsedRow;
-    const parsedEan = parseNumberColumn(ean);
-
-    console.log(parsedEan, name, price);
+    await saveBaseProduct(productRepository, parsedRow)
   }
+}
+
+async function saveBaseProduct(productRepository: Repository<BaseProduct>, row: string[]): Promise<void> {
+  const [ean, name, _, __, price] = row;
+  const parsedEan = parseNumberColumn(ean);
+
+  const baseProductEntity = new BaseProduct();
+  baseProductEntity.ean = parsedEan;
+  baseProductEntity.name = name;
+  baseProductEntity.price = parsePriceColumn(price);
+
+  await productRepository.save(baseProductEntity)
 }
 
 function parseNumberColumn(value: string): number {
   const parsedValue = value.replace(/^0+/, '');
   return Number(parsedValue);
+}
+
+function parsePriceColumn(value: string): number {
+  const parsedValue = /,\d{2}$/.test(value) ? value.replace(/\./g, '').replace(',', '.') : value.replace(/,/g, '')
+
+  const numericValue = parseFloat(parsedValue);
+  return isNaN(numericValue) ? 0 : numericValue;
 }
 
 async function initializeDB() {
