@@ -1,0 +1,23 @@
+{
+  "cSpell.words": [
+    "antiadmin",
+    "anticaptchaofficial",
+    "datasource",
+    "luxon",
+    "nestjs",
+    "nursa",
+    "NURSA",
+    "Oidc",
+    "preprod",
+    "rabbitmq",
+    "typeorm",
+    "uuidv"
+  ],
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "eslint.format.enable": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true
+  }
+}

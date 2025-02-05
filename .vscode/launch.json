@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Import CSV",
+      "type": "node",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "ts-node",
+      "program": "${workspaceFolder}/src/scripts/import-csv.ts"
+    }
+  ]
+}

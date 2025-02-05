@@ -1,6 +1,17 @@
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+</p>
+
+## Instalação
+
+```bash
+$ npm install
+```
+
 # Projeto De Preços
 
 ## Plano de Desenvolvimento
+
 - [ ] Criação de um Banco da Dados
 - [ ] Criação de um Script para efetuar a leitura de um produto (via crawler/scrapper)
 - [ ] Criação de um Script para efetuar a leitura de um produto via Http request
@@ -12,8 +23,8 @@
 
 ## Referências
 
+### HTML Drogasil
 
-### Html Drogasil
 * HTML:
 https://www.drogasil.com.br/novalgina-1g-20-comprimidos.html
 * API:
@@ -41,7 +52,14 @@ curl --location 'https://www.drogaraia.com.br/api/next/middlewareGraphql' \
 ```
 
 ### API Drogal
+
 https://www.drogal.com.br/api/catalog_system/pub/products/search?fq=alternateIds_Ean:7896015511159
 
 ### Banco de Dados da Alpha7
+
 https://docs.google.com/document/d/1bAvwvh6IVicT2XsDgj2xEz9rPkmy1BeDhghadzRtOk0/edit?tab=t.0
+
+
+## License
+
+Nest is [MIT licensed](LICENSE).
