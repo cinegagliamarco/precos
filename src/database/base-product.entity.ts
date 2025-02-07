@@ -1,9 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity('base_products')
+@Entity('base_product')
 export class BaseProduct {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn({ type: 'bigint' })
   public id: number;
+
+  @Column({ type: 'bigint' })
+  public ean: number;
 
   @Column({ type: 'varchar', length: 255 })
   public name: string;
@@ -11,6 +14,9 @@ export class BaseProduct {
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   public price: number;
 
-  @Column({ type: 'bigint' })
-  public ean: number;
+  @Column({ type: 'varchar', nullable: true, length: 255 })
+  public book?: string;
+
+  @Column({ type: 'varchar', nullable: true,  length: 1 })
+  public curve?: string;
 }

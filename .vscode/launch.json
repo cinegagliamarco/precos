@@ -8,6 +8,14 @@
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "ts-node",
       "program": "${workspaceFolder}/src/scripts/import-csv.ts"
+    },
+    {
+      "name": "Import Drogal",
+      "type": "node",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "ts-node",
+      "program": "${workspaceFolder}/src/scripts/import-drogal.ts"
     }
   ]
 }

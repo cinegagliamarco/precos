@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { BaseProduct } from '../database/base-product.entity';
 import { TypeOrmDataSource } from '../database/typeorm-datasource';
 
-async function readCSV(filePath: string): Promise<void> {
+async function importCSV(filePath: string): Promise<void> {
   const data = fs.readFileSync(filePath, { encoding: 'utf8' });
   const rows = data.split(/\r?\n/);
 
@@ -14,10 +14,10 @@ async function readCSV(filePath: string): Promise<void> {
     if (!index) continue; // Skip first line (header)
 
     const row = rows[index];
-    if (row.trim() === '') continue; // Skip empty lines
+    if (!row.trim()) continue; // Skip empty lines
 
-    const parsedRow = row.match(/("[^"]*"|[^,]+)/g)?.map(
-      (value) => value.replace(/^"|"$/g, '').trim(), // Remove surrounding quotes and trim
+    const parsedRow = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/g).map(
+      (value) => value.replace(/^"|"$/g, '').trim()
     );
 
     await saveBaseProduct(productRepository, parsedRow)
@@ -25,12 +25,14 @@ async function readCSV(filePath: string): Promise<void> {
 }
 
 async function saveBaseProduct(productRepository: Repository<BaseProduct>, row: string[]): Promise<void> {
-  const [ean, name, _, __, price] = row;
+  const [ean, name, curve, book, _, __, price] = row;
   const parsedEan = parseNumberColumn(ean);
 
   const baseProductEntity = new BaseProduct();
   baseProductEntity.ean = parsedEan;
   baseProductEntity.name = name;
+  baseProductEntity.curve = curve;
+  baseProductEntity.book = book;
   baseProductEntity.price = parsePriceColumn(price);
 
   await productRepository.save(baseProductEntity)
@@ -58,4 +60,4 @@ async function initializeDB() {
   }
 } 
 
-(async () => readCSV(`${__dirname}/products-base.csv`))();
+(async () => importCSV(`${__dirname}/products-base.csv`))();

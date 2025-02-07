@@ -8,7 +8,8 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nodemon",
     "start:prod": "node dist/main",
-    "import:csv": "ts-node src/scripts/import-csv.ts"
+    "import:csv": "ts-node src/scripts/import-csv.ts",
+    "import:drogal": "ts-node src/scripts/import-drogal.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",
