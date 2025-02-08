@@ -17,8 +17,15 @@ const query = `
     CASE 
       WHEN p.origin = 'drogasil' THEN p.price 
       ELSE null
-    END AS drogasil,
-    p.observation
+    END AS drogasil_price,
+    CASE 
+      WHEN p.origin = 'drogal' THEN p.observation 
+      ELSE null
+    END AS drogal_observation,
+    CASE 
+      WHEN p.origin = 'drogasil' THEN p.observation 
+      ELSE null
+    END AS drogasil_observation
   FROM
     base_product bp
   LEFT JOIN product p ON p.ean = bp.ean;
@@ -33,7 +40,8 @@ interface QueryRowResult {
   price: number;
   drogal_price?: number;
   drogasil_price?: number;
-  observation?: string;
+  drogal_observation?: string;
+  drogasil_observation?: string;
 }
 
 async function exportCSV(filename: string): Promise<void> {
@@ -65,7 +73,7 @@ async function initializeDB() {
 }
 
 const convertToCSV = (results: QueryRowResult[]): string => {
-  const header = ['ean', 'name', 'curve', 'book', 'price', 'drogal_price', 'drogasil_price', 'observation'];
+  const header = ['ean', 'name', 'curve', 'book', 'price', 'drogal_price', 'drogasil_price', 'drogal_observation', 'drogasil_observation'];
   const rows = results.map((r) =>
     [
       r.ean,
@@ -75,7 +83,8 @@ const convertToCSV = (results: QueryRowResult[]): string => {
       (r.price ?? '').toString().replaceAll('.', ','),
       (r.drogal_price ?? '').toString().replaceAll('.', ','),
       (r.drogasil_price ?? '').toString().replaceAll('.', ','),
-      r.observation ?? ''
+      r.drogal_observation ?? '',
+      r.drogasil_observation ?? ''
     ]
       .map((value) => `"${String(value).replace(/"/g, '""')}"`)
       .join(',')
