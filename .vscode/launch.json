@@ -1,21 +1,21 @@
 {
   "version": "0.2.0",
+  "inputs": [
+    {
+      "id": "scriptName",
+      "type": "pickString",
+      "description": "Select the Script Name",
+      "options": ["export-csv", "import-csv", "import-drogal", "import-drogasil"]
+    }
+  ],
   "configurations": [
     {
-      "name": "Import CSV",
+      "name": "Run Script",
       "type": "node",
       "request": "launch",
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "ts-node",
-      "program": "${workspaceFolder}/src/scripts/import-csv.ts"
-    },
-    {
-      "name": "Import Drogal",
-      "type": "node",
-      "request": "launch",
-      "skipFiles": ["<node_internals>/**"],
-      "runtimeExecutable": "ts-node",
-      "program": "${workspaceFolder}/src/scripts/import-drogal.ts"
+      "program": "${workspaceFolder}/src/scripts/${input:scriptName}.ts"
     }
   ]
 }

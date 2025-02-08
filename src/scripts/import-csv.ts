@@ -16,11 +16,9 @@ async function importCSV(filePath: string): Promise<void> {
     const row = rows[index];
     if (!row.trim()) continue; // Skip empty lines
 
-    const parsedRow = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/g).map(
-      (value) => value.replace(/^"|"$/g, '').trim()
-    );
+    const parsedRow = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/g).map((value) => value.replace(/^"|"$/g, '').trim());
 
-    await saveBaseProduct(productRepository, parsedRow)
+    await saveBaseProduct(productRepository, parsedRow);
   }
 }
 
@@ -35,7 +33,7 @@ async function saveBaseProduct(productRepository: Repository<BaseProduct>, row: 
   baseProductEntity.book = book;
   baseProductEntity.price = parsePriceColumn(price);
 
-  await productRepository.save(baseProductEntity)
+  await productRepository.save(baseProductEntity);
 }
 
 function parseNumberColumn(value: string): number {
@@ -44,7 +42,7 @@ function parseNumberColumn(value: string): number {
 }
 
 function parsePriceColumn(value: string): number {
-  const parsedValue = /,\d{2}$/.test(value) ? value.replace(/\./g, '').replace(',', '.') : value.replace(/,/g, '')
+  const parsedValue = /,\d{2}$/.test(value) ? value.replace(/\./g, '').replace(',', '.') : value.replace(/,/g, '');
 
   const numericValue = parseFloat(parsedValue);
   return isNaN(numericValue) ? 0 : numericValue;
@@ -58,6 +56,6 @@ async function initializeDB() {
   } catch (error) {
     console.error('Error during DataSource initialization:', error);
   }
-} 
+}
 
 (async () => importCSV(`${__dirname}/products-base.csv`))();
