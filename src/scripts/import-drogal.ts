@@ -9,11 +9,8 @@ async function importDrogal(): Promise<void> {
   await initializeDB();
   const baseProductRepository = TypeOrmDataSource.getRepository(BaseProduct);
   const productRepository = TypeOrmDataSource.getRepository(Product);
-  const baseProducts = await baseProductRepository
-    .createQueryBuilder('base_product')
-    .select('DISTINCT base_product.ean', 'ean')
-    .getRawMany();
-  const products = await productRepository.find({ select: ['ean'] });
+  const baseProducts = await baseProductRepository.createQueryBuilder('base_product').select('DISTINCT base_product.ean', 'ean').getRawMany();
+  const products = await productRepository.find({ select: ['ean'], where: { origin: 'drogal' } });
   const productsHashMap = {};
   products.forEach(({ ean }) => (productsHashMap[ean] = true));
 
@@ -22,7 +19,7 @@ async function importDrogal(): Promise<void> {
 
   let total = notInsertedProducts.length;
   for (const { ean } of notInsertedProducts) {
-    console.log(`Missing ${total--}`)
+    console.log(`Missing ${total--}`);
     const products = await fetchProductByEan(ean);
     await new Promise((res) => setTimeout(res, 100));
     if (!products?.length) continue;
