@@ -9,7 +9,8 @@
     "start": "nodemon",
     "start:prod": "node dist/main",
     "import:csv": "ts-node src/scripts/import-csv.ts",
-    "import:drogal": "ts-node src/scripts/import-drogal.ts"
+    "import:drogal": "ts-node src/scripts/import-drogal.ts",
+    "import:drogasil": "ts-node src/scripts/import-drogasil.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",
