@@ -46,7 +46,7 @@ interface QueryRowResult {
 
 async function exportCSV(filename: string): Promise<void> {
   try {
-    await initializeDB();
+    await TypeOrmDataSource.initialize();
     const records: QueryRowResult[] = await TypeOrmDataSource.query(query);
 
     if (!records?.length) return;
@@ -59,16 +59,6 @@ async function exportCSV(filename: string): Promise<void> {
     console.log(`CSV file saved`);
   } catch (error) {
     console.error('Error exporting CSV:', error);
-  }
-}
-
-async function initializeDB() {
-  try {
-    // Initialize the connection
-    await TypeOrmDataSource.initialize();
-    console.log('DataSource has been initialized!');
-  } catch (error) {
-    console.error('Error during DataSource initialization:', error);
   }
 }
 

@@ -6,7 +6,7 @@ import { TypeOrmDataSource } from '../database/typeorm-datasource';
 import { DrogalApiProductInterface } from '../interfaces/drogal-api-product.interface';
 
 async function importDrogal(): Promise<void> {
-  await initializeDB();
+  await TypeOrmDataSource.initialize();
   const baseProductRepository = TypeOrmDataSource.getRepository(BaseProduct);
   const productRepository = TypeOrmDataSource.getRepository(Product);
   const baseProducts = await baseProductRepository.createQueryBuilder('base_product').select('DISTINCT base_product.ean', 'ean').getRawMany();
@@ -60,16 +60,6 @@ async function saveProduct(productRepository: Repository<Product>, ean: number, 
   productEntity.sku = 0;
 
   await productRepository.save(productEntity);
-}
-
-async function initializeDB() {
-  try {
-    // Initialize the connection
-    await TypeOrmDataSource.initialize();
-    console.log('DataSource has been initialized!');
-  } catch (error) {
-    console.error('Error during DataSource initialization:', error);
-  }
 }
 
 (async () => importDrogal())();

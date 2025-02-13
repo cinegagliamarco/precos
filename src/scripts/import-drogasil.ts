@@ -7,7 +7,7 @@ import { TypeOrmDataSource } from '../database/typeorm-datasource';
 import { DrogasilApiProductInterface } from '../interfaces/drogasil-api-product.interface';
 
 async function importDrogasil(): Promise<void> {
-  await initializeDB();
+  await TypeOrmDataSource.initialize();
   const baseProductRepository = TypeOrmDataSource.getRepository(BaseProduct);
   const productRepository = TypeOrmDataSource.getRepository(Product);
   const baseProducts = await baseProductRepository.createQueryBuilder('base_product').select('DISTINCT base_product.ean', 'ean').getRawMany();
@@ -18,13 +18,27 @@ async function importDrogasil(): Promise<void> {
   console.log(`Quantidade de produtos`, baseProducts.length);
   const notInsertedProducts = baseProducts.filter(({ ean }) => !productsHashMap[ean]);
 
-  let total = notInsertedProducts.length;
-  for (const { ean } of notInsertedProducts) {
-    console.log(`Missing ${total--}`);
-    const product = await fetchProductSku(ean);
-    await new Promise((res) => setTimeout(res, 100));
-    if (!product?.success) continue;
-    await saveProduct(productRepository, ean, product);
+  // let total = notInsertedProducts.length;
+  // for (const { ean } of notInsertedProducts) {
+  //   console.log(`Missing ${total--}`);
+  //   const product = await fetchProductSku(ean);
+  //   if (!product?.success) continue;
+  //   await new Promise((res) => setTimeout(res, 100));
+  //   await saveProduct(productRepository, ean, product);
+  // }
+
+  const workSize = 50;
+  const tasks = [...notInsertedProducts];
+  while (tasks.length) {
+    const promises = tasks.splice(0, workSize).map(async ({ ean }) => {
+      console.log(`Missing ${tasks.length}`);
+      const product = await fetchProductSku(ean);
+      if (!product?.success) return Promise.resolve();
+      await saveProduct(productRepository, ean, product);
+    });
+
+    await Promise.all(promises);
+    await new Promise((res) => setTimeout(res, 2000));
   }
 }
 
@@ -65,7 +79,7 @@ async function getProductDetails(sku: string) {
       'sec-ch-ua-platform': '"macOS"',
       'sec-fetch-dest': 'empty'
     };
-  
+
     const data = {
       query: `query getProduct($sku: String!) {
         productBySku(sku: $sku) {
@@ -85,9 +99,9 @@ async function getProductDetails(sku: string) {
       }`,
       variables: { sku }
     };
-  
+
     const url = 'https://www.drogaraia.com.br/api/next/middlewareGraphql';
-  
+
     const response = await axios.post<DrogasilApiProductInterface>(url, data, { headers });
     return response.data;
   } catch (error) {
@@ -117,16 +131,6 @@ async function saveProduct(productRepository: Repository<Product>, ean: number, 
   }
 
   await productRepository.save(productEntity);
-}
-
-async function initializeDB() {
-  try {
-    // Initialize the connection
-    await TypeOrmDataSource.initialize();
-    console.log('DataSource has been initialized!');
-  } catch (error) {
-    console.error('Error during DataSource initialization:', error);
-  }
 }
 
 // async function fetchProductDetails(url: string) {
