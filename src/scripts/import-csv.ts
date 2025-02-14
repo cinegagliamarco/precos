@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { Repository } from 'typeorm';
 import { BaseProduct } from '../database/base-product.entity';
 import { TypeOrmDataSource } from '../database/typeorm-datasource';
 
@@ -7,9 +6,10 @@ async function importCSV(filePath: string): Promise<void> {
   const data = fs.readFileSync(filePath, { encoding: 'utf8' });
   const rows = data.split(/\r?\n/);
 
-  await initializeDB();
+  await TypeOrmDataSource.initialize();
   const productRepository = TypeOrmDataSource.getRepository(BaseProduct);
 
+  const mapper = {};
   for (let index = 0; index < rows.length; index++) {
     if (!index) continue; // Skip first line (header)
 
@@ -17,12 +17,19 @@ async function importCSV(filePath: string): Promise<void> {
     if (!row.trim()) continue; // Skip empty lines
 
     const parsedRow = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/g).map((value) => value.replace(/^"|"$/g, '').trim());
+    const entity = parseBaseProduct(parsedRow)
+    mapper[entity.ean] = entity;
+  }
 
-    await saveBaseProduct(productRepository, parsedRow);
+  const total = Object.values(mapper).length;
+  console.log(`Importando ${total} produtos base`)
+
+  for (const baseProductEntity of Object.values(mapper)) {
+    await productRepository.save(baseProductEntity);
   }
 }
 
-async function saveBaseProduct(productRepository: Repository<BaseProduct>, row: string[]): Promise<void> {
+function parseBaseProduct(row: string[]): BaseProduct {
   const [ean, name, curve, book, _, __, price] = row;
   const parsedEan = parseNumberColumn(ean);
 
@@ -33,7 +40,7 @@ async function saveBaseProduct(productRepository: Repository<BaseProduct>, row: 
   baseProductEntity.book = book;
   baseProductEntity.price = parsePriceColumn(price);
 
-  await productRepository.save(baseProductEntity);
+  return baseProductEntity;
 }
 
 function parseNumberColumn(value: string): number {
@@ -46,16 +53,6 @@ function parsePriceColumn(value: string): number {
 
   const numericValue = parseFloat(parsedValue);
   return isNaN(numericValue) ? 0 : numericValue;
-}
-
-async function initializeDB() {
-  try {
-    // Initialize the connection
-    await TypeOrmDataSource.initialize();
-    console.log('DataSource has been initialized!');
-  } catch (error) {
-    console.error('Error during DataSource initialization:', error);
-  }
 }
 
 (async () => importCSV(`${__dirname}/products-base.csv`))();

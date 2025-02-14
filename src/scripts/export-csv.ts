@@ -4,31 +4,18 @@ import { TypeOrmDataSource } from '../database/typeorm-datasource';
 
 const query = `
   SELECT
-    bp.id,
     bp.ean,
     bp.name,
     bp.curve,
     bp.book,
     bp.price,
-    CASE 
-      WHEN p.origin = 'drogal' THEN p.price 
-      ELSE null
-    END AS drogal_price,
-    CASE 
-      WHEN p.origin = 'drogasil' THEN p.price 
-      ELSE null
-    END AS drogasil_price,
-    CASE 
-      WHEN p.origin = 'drogal' THEN p.observation 
-      ELSE null
-    END AS drogal_observation,
-    CASE 
-      WHEN p.origin = 'drogasil' THEN p.observation 
-      ELSE null
-    END AS drogasil_observation
-  FROM
-    base_product bp
-  LEFT JOIN product p ON p.ean = bp.ean;
+    MAX(p.price) FILTER (WHERE p.origin = 'drogal') AS drogal_price,
+    MAX(p.price) FILTER (WHERE p.origin = 'drogasil') AS drogasil_price,
+    MAX(p.observation) FILTER (WHERE p.origin = 'drogal') AS drogal_observation,
+    MAX(p.observation) FILTER (WHERE p.origin = 'drogasil') AS drogasil_observation
+  FROM base_product bp
+  LEFT JOIN product p ON p.ean = bp.ean
+  GROUP BY bp.ean, bp.name, bp.curve, bp.book, bp.price;
 `;
 
 interface QueryRowResult {

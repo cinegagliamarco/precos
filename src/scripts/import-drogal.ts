@@ -17,14 +17,21 @@ async function importDrogal(): Promise<void> {
   console.log(`Quantidade de produtos`, baseProducts.length);
   const notInsertedProducts = baseProducts.filter(({ ean }) => !productsHashMap[ean]);
 
-  let total = notInsertedProducts.length;
-  for (const { ean } of notInsertedProducts) {
-    console.log(`Missing ${total--}`);
-    const products = await fetchProductByEan(ean);
-    await new Promise((res) => setTimeout(res, 100));
-    if (!products?.length) continue;
-    const [product] = products;
-    await saveProduct(productRepository, ean, product);
+
+  const workSize = 50;
+  const tasks = [...notInsertedProducts];
+  while (tasks.length) {
+    const promises = tasks.splice(0, workSize).map(async ({ ean }) => {
+      console.log(`Missing ${tasks.length}`);
+      const products = await fetchProductByEan(ean);
+      await new Promise((res) => setTimeout(res, 100));
+      if (!products?.length) return;
+      const [product] = products;
+      await saveProduct(productRepository, ean, product);
+    });
+
+    await Promise.all(promises);
+    await new Promise((res) => setTimeout(res, 2000));
   }
 }
 

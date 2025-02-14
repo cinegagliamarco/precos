@@ -18,15 +18,6 @@ async function importDrogasil(): Promise<void> {
   console.log(`Quantidade de produtos`, baseProducts.length);
   const notInsertedProducts = baseProducts.filter(({ ean }) => !productsHashMap[ean]);
 
-  // let total = notInsertedProducts.length;
-  // for (const { ean } of notInsertedProducts) {
-  //   console.log(`Missing ${total--}`);
-  //   const product = await fetchProductSku(ean);
-  //   if (!product?.success) continue;
-  //   await new Promise((res) => setTimeout(res, 100));
-  //   await saveProduct(productRepository, ean, product);
-  // }
-
   const workSize = 50;
   const tasks = [...notInsertedProducts];
   while (tasks.length) {
