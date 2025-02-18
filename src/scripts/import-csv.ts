@@ -55,4 +55,4 @@ function parsePriceColumn(value: string): number {
   return isNaN(numericValue) ? 0 : numericValue;
 }
 
-(async () => importCSV(`${__dirname}/products-base.csv`))();
+(async () => importCSV(`${__dirname}/csvs/products-base.csv`))();

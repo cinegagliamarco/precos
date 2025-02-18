@@ -1,7 +1,8 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { BaseTypeormModel } from './base.typeorm-model';
 
 @Entity('base_product')
-export class BaseProductTypeormEntity {
+export class BaseProductTypeormEntity extends BaseTypeormModel {
   @PrimaryColumn({ type: 'bigint' })
   public id: number;
 

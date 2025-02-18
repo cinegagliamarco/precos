@@ -1,3 +1,3 @@
 import { importDrogasil } from './helpers/drogasil.importer';
 
-(async () => importDrogasil())();
+(async () => importDrogasil(true))();

@@ -4,28 +4,24 @@ import { TypeOrmDataSource } from '../database/typeorm.datasource';
 
 const query = `
   SELECT
-    bp.ean,
-    bp.name,
-    bp.curve,
-    bp.book,
-    bp.price,
+    gp.ean,
+    COALESCE(
+        MAX(p.name) FILTER (WHERE p.origin = 'drogal'),
+        MAX(p.name) FILTER (WHERE p.origin = 'drogasil')
+    ) AS name,
     MAX(p.price) FILTER (WHERE p.origin = 'drogal') AS drogal_price,
     MAX(p.price) FILTER (WHERE p.origin = 'drogasil') AS drogasil_price,
     MAX(p.observation) FILTER (WHERE p.origin = 'drogal') AS drogal_observation,
     MAX(p.observation) FILTER (WHERE p.origin = 'drogasil') AS drogasil_observation
-  FROM base_product bp
-  LEFT JOIN product p ON p.ean = bp.ean
+  FROM generic_product gp
+  LEFT JOIN product p ON p.ean = gp.ean
   WHERE p.has_stock = TRUE
-  GROUP BY bp.ean, bp.name, bp.curve, bp.book, bp.price;
+  GROUP BY gp.ean;
 `;
 
 interface QueryRowResult {
-  id: number;
   ean: number;
   name: string;
-  curve?: string;
-  book?: string;
-  price: number;
   drogal_price?: number;
   drogasil_price?: number;
   drogal_observation?: string;
@@ -51,14 +47,11 @@ async function exportCSV(filename: string): Promise<void> {
 }
 
 const convertToCSV = (results: QueryRowResult[]): string => {
-  const header = ['ean', 'name', 'curve', 'book', 'price', 'drogal_price', 'drogasil_price', 'drogal_observation', 'drogasil_observation'];
+  const header = ['ean', 'name', 'drogal_price', 'drogasil_price', 'drogal_observation', 'drogasil_observation'];
   const rows = results.map((r) =>
     [
       r.ean,
       r.name,
-      r.curve ?? '',
-      r.book ?? '',
-      (r.price ?? '').toString().replaceAll('.', ','),
       (r.drogal_price ?? '').toString().replaceAll('.', ','),
       (r.drogasil_price ?? '').toString().replaceAll('.', ','),
       r.drogal_observation ?? '',
@@ -71,4 +64,4 @@ const convertToCSV = (results: QueryRowResult[]): string => {
   return [header.join(','), ...rows].join('\n');
 };
 
-(async () => exportCSV(`${__dirname}/csvs/combined-products.csv`))();
+(async () => exportCSV(`${__dirname}/csvs/combined-generic-products.csv`))();

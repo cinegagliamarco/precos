@@ -5,7 +5,16 @@
       "id": "scriptName",
       "type": "pickString",
       "description": "Select the Script Name",
-      "options": ["export-csv", "import-csv", "import-drogal", "import-drogasil"]
+      "options": [
+        "import-csv",
+        "import-drogal",
+        "import-drogasil",
+        "export-csv",
+
+        "import-generic-products-csv",
+        "import-generic-drogasil",
+        "import-generic-drogal"
+      ]
     }
   ],
   "configurations": [
