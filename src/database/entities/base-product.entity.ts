@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('base_product')
-export class BaseProduct {
+export class BaseProductTypeormEntity {
   @PrimaryColumn({ type: 'bigint' })
   public id: number;
 

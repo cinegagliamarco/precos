@@ -1,15 +1,15 @@
 import axios from 'axios';
 import { load } from 'cheerio';
 import { Repository } from 'typeorm';
-import { BaseProduct } from '../database/base-product.entity';
-import { Product } from '../database/product.entity';
-import { TypeOrmDataSource } from '../database/typeorm-datasource';
+import { BaseProductTypeormEntity } from '../database/entities/base-product.entity';
+import { ProductTypeormEntity } from '../database/entities/product.entity';
+import { TypeOrmDataSource } from '../database/typeorm.datasource';
 import { DrogasilApiProductInterface } from '../interfaces/drogasil-api-product.interface';
 
 async function importDrogasil(): Promise<void> {
   await TypeOrmDataSource.initialize();
-  const baseProductRepository = TypeOrmDataSource.getRepository(BaseProduct);
-  const productRepository = TypeOrmDataSource.getRepository(Product);
+  const baseProductRepository = TypeOrmDataSource.getRepository(BaseProductTypeormEntity);
+  const productRepository = TypeOrmDataSource.getRepository(ProductTypeormEntity);
   const baseProducts = await baseProductRepository.createQueryBuilder('base_product').select('DISTINCT base_product.ean', 'ean').getRawMany();
   const products = await productRepository.find({ select: ['ean'], where: { origin: 'drogasil' } });
   const productsHashMap = {};
@@ -18,11 +18,11 @@ async function importDrogasil(): Promise<void> {
   console.log(`Quantidade de produtos`, baseProducts.length);
   const notInsertedProducts = baseProducts.filter(({ ean }) => !productsHashMap[ean]);
 
-  const workSize = 50;
+  const workSize = 100;
   const tasks = [...notInsertedProducts];
   while (tasks.length) {
+    console.log(`Missing ${tasks.length}`);
     const promises = tasks.splice(0, workSize).map(async ({ ean }) => {
-      console.log(`Missing ${tasks.length}`);
       const product = await fetchProductSku(ean);
       if (!product?.success) return Promise.resolve();
       await saveProduct(productRepository, ean, product);
@@ -86,6 +86,11 @@ async function getProductDetails(sku: string) {
           media_gallery_entries {
             file
           }
+          liveComposition {
+            liveStock {
+              qty
+            }
+          }
         }
       }`,
       variables: { sku }
@@ -100,10 +105,10 @@ async function getProductDetails(sku: string) {
   }
 }
 
-async function saveProduct(productRepository: Repository<Product>, ean: number, product: DrogasilApiProductInterface): Promise<void> {
+async function saveProduct(productRepository: Repository<ProductTypeormEntity>, ean: number, product: DrogasilApiProductInterface): Promise<void> {
   if (!product.data?.productBySku) return;
 
-  const productEntity = new Product();
+  const productEntity = new ProductTypeormEntity();
   productEntity.ean = ean;
   productEntity.name = product.data.productBySku.name;
   productEntity.origin = 'drogasil';
@@ -111,6 +116,7 @@ async function saveProduct(productRepository: Repository<Product>, ean: number, 
   productEntity.brand = '';
   productEntity.image = product.data.productBySku.media_gallery_entries?.[0]?.file;
   productEntity.sku = Number(product.data.productBySku.sku || '0');
+  productEntity.hasStock = !!product.data.productBySku.liveComposition?.liveStock?.qty
 
   if (product.data.productBySku.price_aux) {
     const { value_to, lmpm_value_to, lmpm_qty } = product.data.productBySku.price_aux;

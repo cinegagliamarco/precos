@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('product')
-export class Product {
+export class ProductTypeormEntity {
   @PrimaryGeneratedColumn()
   public id: number;
 
@@ -28,4 +28,7 @@ export class Product {
 
   @Column({ type: 'bigint' })
   public sku: number;
+
+  @Column({ type: 'boolean', default: false, nullable: false, name: 'has_stock'})
+  public hasStock: boolean;
 }

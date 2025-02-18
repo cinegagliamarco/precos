@@ -1,14 +1,14 @@
 import axios from 'axios';
 import { Repository } from 'typeorm';
-import { BaseProduct } from '../database/base-product.entity';
-import { Product } from '../database/product.entity';
-import { TypeOrmDataSource } from '../database/typeorm-datasource';
+import { BaseProductTypeormEntity } from '../database/entities/base-product.entity';
+import { ProductTypeormEntity } from '../database/entities/product.entity';
+import { TypeOrmDataSource } from '../database/typeorm.datasource';
 import { DrogalApiProductInterface } from '../interfaces/drogal-api-product.interface';
 
 async function importDrogal(): Promise<void> {
   await TypeOrmDataSource.initialize();
-  const baseProductRepository = TypeOrmDataSource.getRepository(BaseProduct);
-  const productRepository = TypeOrmDataSource.getRepository(Product);
+  const baseProductRepository = TypeOrmDataSource.getRepository(BaseProductTypeormEntity);
+  const productRepository = TypeOrmDataSource.getRepository(ProductTypeormEntity);
   const baseProducts = await baseProductRepository.createQueryBuilder('base_product').select('DISTINCT base_product.ean', 'ean').getRawMany();
   const products = await productRepository.find({ select: ['ean'], where: { origin: 'drogal' } });
   const productsHashMap = {};
@@ -17,12 +17,11 @@ async function importDrogal(): Promise<void> {
   console.log(`Quantidade de produtos`, baseProducts.length);
   const notInsertedProducts = baseProducts.filter(({ ean }) => !productsHashMap[ean]);
 
-
-  const workSize = 50;
+  const workSize = 100;
   const tasks = [...notInsertedProducts];
   while (tasks.length) {
+    console.log(`Missing ${tasks.length}`);
     const promises = tasks.splice(0, workSize).map(async ({ ean }) => {
-      console.log(`Missing ${tasks.length}`);
       const products = await fetchProductByEan(ean);
       await new Promise((res) => setTimeout(res, 100));
       if (!products?.length) return;
@@ -51,12 +50,14 @@ async function fetchProductByEan(ean: string): Promise<DrogalApiProductInterface
   }
 }
 
-async function saveProduct(productRepository: Repository<Product>, ean: number, product: DrogalApiProductInterface): Promise<void> {
-  if (!product.items.length) return;
-  if (!product.items[0].sellers.length) return;
-  if (!product.items[0].sellers[0].commertialOffer) return;
+async function saveProduct(productRepository: Repository<ProductTypeormEntity>, ean: number, product: DrogalApiProductInterface): Promise<void> {
+  if (
+    !product.items.length ||
+    !product.items[0].sellers.length ||
+    !product.items[0].sellers[0].commertialOffer
+  ) return;
 
-  const productEntity = new Product();
+  const productEntity = new ProductTypeormEntity();
   productEntity.ean = ean;
   productEntity.name = product.productName;
   productEntity.origin = 'drogal';
@@ -64,7 +65,8 @@ async function saveProduct(productRepository: Repository<Product>, ean: number, 
   productEntity.observation = product.items[0].sellers[0].commertialOffer.PromotionTeasers[0]?.Name || '';
   productEntity.brand = product.brand;
   productEntity.image = product.brandImageUrl;
-  productEntity.sku = 0;
+  productEntity.sku = Number(product.productId);
+  productEntity.hasStock = product.items[0].sellers[0].commertialOffer.IsAvailable;
 
   await productRepository.save(productEntity);
 }

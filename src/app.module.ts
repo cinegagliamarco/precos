@@ -1,10 +1,11 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { HttpModule } from '@nestjs/axios';
+import { TypeormDatabaseModule } from './database/typeorm.database.module';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, TypeormDatabaseModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TypeOrmDataSource } from '../database/typeorm-datasource';
+import { TypeOrmDataSource } from '../database/typeorm.datasource';
 
 const query = `
   SELECT
@@ -15,6 +15,7 @@ const query = `
     MAX(p.observation) FILTER (WHERE p.origin = 'drogasil') AS drogasil_observation
   FROM base_product bp
   LEFT JOIN product p ON p.ean = bp.ean
+  WHERE p.has_stock = TRUE
   GROUP BY bp.ean, bp.name, bp.curve, bp.book, bp.price;
 `;
 

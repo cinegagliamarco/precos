@@ -13,6 +13,11 @@ export interface DrogasilApiProductInterface {
       media_gallery_entries: {
         file: string;
       }[];
+      liveComposition: {
+        liveStock: {
+          qty: number;
+        };
+      };
     };
   };
 }

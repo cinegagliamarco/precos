@@ -12,8 +12,6 @@ export interface DrogalApiProductInterface {
   metaTagDescription: string;
   releaseDate: string;
   clusterHighlights: ClusterHighlights;
-  productClusters: ProductClusters;
-  searchableClusters: SearchableClusters;
   categories: string[];
   categoriesIds: string[];
   link: string;
@@ -34,28 +32,6 @@ export interface DrogalApiProductInterface {
 }
 
 export interface ClusterHighlights {}
-
-export interface ProductClusters {
-  '153': string;
-  '155': string;
-  '160': string;
-  '165': string;
-  '183': string;
-  '187': string;
-  '197': string;
-  '209': string;
-  '238': string;
-  '240': string;
-  '241': string;
-  '247': string;
-  '249': string;
-}
-
-export interface SearchableClusters {
-  '153': string;
-  '155': string;
-  '238': string;
-}
 
 export interface Item {
   itemId: string;

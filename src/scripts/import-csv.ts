@@ -1,13 +1,13 @@
 import * as fs from 'fs';
-import { BaseProduct } from '../database/base-product.entity';
-import { TypeOrmDataSource } from '../database/typeorm-datasource';
+import { BaseProductTypeormEntity } from '../database/entities/base-product.entity';
+import { TypeOrmDataSource } from '../database/typeorm.datasource';
 
 async function importCSV(filePath: string): Promise<void> {
   const data = fs.readFileSync(filePath, { encoding: 'utf8' });
   const rows = data.split(/\r?\n/);
 
   await TypeOrmDataSource.initialize();
-  const productRepository = TypeOrmDataSource.getRepository(BaseProduct);
+  const productRepository = TypeOrmDataSource.getRepository(BaseProductTypeormEntity);
 
   const mapper = {};
   for (let index = 0; index < rows.length; index++) {
@@ -29,11 +29,11 @@ async function importCSV(filePath: string): Promise<void> {
   }
 }
 
-function parseBaseProduct(row: string[]): BaseProduct {
+function parseBaseProduct(row: string[]): BaseProductTypeormEntity {
   const [ean, name, curve, book, _, __, price] = row;
   const parsedEan = parseNumberColumn(ean);
 
-  const baseProductEntity = new BaseProduct();
+  const baseProductEntity = new BaseProductTypeormEntity();
   baseProductEntity.ean = parsedEan;
   baseProductEntity.name = name;
   baseProductEntity.curve = curve;
