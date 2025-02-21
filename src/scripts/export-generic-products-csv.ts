@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TypeOrmDataSource } from '../database/typeorm.datasource';
+import { TypeOrmDataSource } from '../database/typeorm.data-source';
 
 const query = `
   SELECT

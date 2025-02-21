@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { GenericProductTypeormEntity } from '../database/entities/generic-product.entity';
-import { TypeOrmDataSource } from '../database/typeorm.datasource';
+import { TypeOrmDataSource } from '../database/typeorm.data-source';
 
 async function importGenericProductsCSV(filePath: string): Promise<void> {
   const data = fs.readFileSync(filePath, { encoding: 'utf8' });
@@ -31,7 +31,7 @@ async function importGenericProductsCSV(filePath: string): Promise<void> {
   console.log(`Importando ${total} produtos genéricos`);
 
   for (const entity of Object.values(mapper)) {
-    await repository.save(entity);
+    await repository.save(entity).catch((e) => console.error(e));
   }
 }
 

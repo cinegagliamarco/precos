@@ -10,7 +10,7 @@
         "import-drogal",
         "import-drogasil",
         "export-csv",
-
+        "import-drogal-stock",
         "import-generic-products-csv",
         "import-generic-drogasil",
         "import-generic-drogal"

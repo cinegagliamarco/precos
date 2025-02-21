@@ -1,4 +1,4 @@
-export interface DrogalApiProductInterface {
+export interface DrogalApiGetProductApiResponse {
   productId: string;
   productName: string;
   brand: string;

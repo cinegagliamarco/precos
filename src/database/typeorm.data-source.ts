@@ -8,6 +8,7 @@ export const TypeOrmDataSource = new DataSource({
   password: 'password',
   database: 'products',
   entities: [`${__dirname}/**/*.entity.{ts,js}`],
+  migrations: [`${process.cwd()}/src/database/migrations/**/*.{ts,js}`],
   synchronize: false, // Set to false in production
   logging: true // Optional, to log queries
 });

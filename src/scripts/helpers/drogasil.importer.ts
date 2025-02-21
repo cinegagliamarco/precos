@@ -4,14 +4,15 @@ import { Repository } from 'typeorm';
 import { BaseProductTypeormEntity } from '../../database/entities/base-product.entity';
 import { GenericProductTypeormEntity } from '../../database/entities/generic-product.entity';
 import { ProductTypeormEntity } from '../../database/entities/product.entity';
-import { TypeOrmDataSource } from '../../database/typeorm.datasource';
-import { DrogasilApiProductInterface } from '../../interfaces/drogasil-api-product.interface';
+import { TypeOrmDataSource } from '../../database/typeorm.data-source';
+import { DrogasilGetProductApiResponse } from '../../interfaces/drogasil/get-product.api.interface';
+import { Origin } from '../../common/origin.enum';
 
 export async function importDrogasil(generic = false): Promise<void> {
   await TypeOrmDataSource.initialize();
   const baseProducts = await fetchBaseProducts(generic);
   const productRepository = TypeOrmDataSource.getRepository(ProductTypeormEntity);
-  const products = await productRepository.find({ select: ['ean'], where: { origin: 'drogasil' } });
+  const products = await productRepository.find({ select: ['ean'], where: { origin: Origin.DROGASIL } });
   const productsHashMap = {};
   products.forEach(({ ean }) => (productsHashMap[ean] = true));
 
@@ -24,7 +25,9 @@ export async function importDrogasil(generic = false): Promise<void> {
     console.log(`Missing ${tasks.length}`);
     const promises = tasks.splice(0, workSize).map(async ({ ean }) => {
       const product = await fetchProductSku(ean);
-      if (!product?.success) return Promise.resolve();
+      if (!product?.success) {
+        return saveEmptyProduct(productRepository, ean);
+      }
       await saveProduct(productRepository, ean, product);
     });
 
@@ -33,7 +36,7 @@ export async function importDrogasil(generic = false): Promise<void> {
   }
 }
 
-async function fetchProductSku(ean: number): Promise<DrogasilApiProductInterface | null> {
+async function fetchProductSku(ean: number): Promise<DrogasilGetProductApiResponse | null> {
   const url = `https://www.drogasil.com.br/search?w=${ean}&facets=filters.Vendido+por%3ADrogasil&p=1`;
 
   try {
@@ -107,20 +110,28 @@ async function getProductDetails(sku: string) {
 
     const url = 'https://www.drogaraia.com.br/api/next/middlewareGraphql';
 
-    const response = await axios.post<DrogasilApiProductInterface>(url, data, { headers });
+    const response = await axios.post<DrogasilGetProductApiResponse>(url, data, { headers });
     return response.data;
   } catch (error) {
     console.error('Error fetching the page:', error.message);
   }
 }
 
-async function saveProduct(productRepository: Repository<ProductTypeormEntity>, ean: number, product: DrogasilApiProductInterface): Promise<void> {
+async function saveEmptyProduct(productRepository: Repository<ProductTypeormEntity>, ean: number): Promise<void> {
+  const productEntity = new ProductTypeormEntity();
+  productEntity.ean = ean;
+  productEntity.origin = Origin.DROGASIL;
+
+  await productRepository.save(productEntity);
+}
+
+async function saveProduct(productRepository: Repository<ProductTypeormEntity>, ean: number, product: DrogasilGetProductApiResponse): Promise<void> {
   if (!product.data?.productBySku) return;
 
   const productEntity = new ProductTypeormEntity();
   productEntity.ean = ean;
   productEntity.name = product.data.productBySku.name;
-  productEntity.origin = 'drogasil';
+  productEntity.origin = Origin.DROGASIL;
   productEntity.observation = '';
   productEntity.brand = '';
   productEntity.image = product.data.productBySku.media_gallery_entries?.[0]?.file;

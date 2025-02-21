@@ -63,3 +63,17 @@ https://docs.google.com/document/d/1bAvwvh6IVicT2XsDgj2xEz9rPkmy1BeDhghadzRtOk0/
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+
+## Migrations
+
+```bash
+$ npm run migration:generate
+```
+
+E.g.:
+
+```bash
+$ npm run migration:generate --name=InitializeProductDatabase
+```
+

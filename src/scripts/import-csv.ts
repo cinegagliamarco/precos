@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { BaseProductTypeormEntity } from '../database/entities/base-product.entity';
-import { TypeOrmDataSource } from '../database/typeorm.datasource';
+import { TypeOrmDataSource } from '../database/typeorm.data-source';
 
 async function importCSV(filePath: string): Promise<void> {
   const data = fs.readFileSync(filePath, { encoding: 'utf8' });

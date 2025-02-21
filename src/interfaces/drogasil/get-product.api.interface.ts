@@ -1,4 +1,4 @@
-export interface DrogasilApiProductInterface {
+export interface DrogasilGetProductApiResponse {
   success: boolean;
   data: {
     productBySku: {

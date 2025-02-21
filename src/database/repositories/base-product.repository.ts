@@ -4,5 +4,9 @@ import { BaseProductTypeormEntity } from '../entities/base-product.entity';
 
 @Injectable()
 export class BaseProductRepository {
-  constructor(private readonly typeormRepository: Repository<BaseProductTypeormEntity>) {}
+  constructor(private readonly repository: Repository<BaseProductTypeormEntity>) {}
+
+  public findAll(): Promise<BaseProductTypeormEntity[]> {
+    return this.repository.find();
+  }
 }

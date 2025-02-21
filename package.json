@@ -9,21 +9,27 @@
     "start": "nodemon",
     "start:prod": "node dist/main",
 
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/database/typeorm.data-source.ts",
+    "migration:generate": "npm run typeorm migration:generate src/database/migrations/$npm_config_name",
+    "migration:run": "npm run typeorm migration:run",
+    "migration:revert": "npm run typeorm migration:revert",
+
     "import:csv": "ts-node src/scripts/import-csv.ts",
     "import:drogal": "ts-node src/scripts/import-drogal.ts",
     "import:drogasil": "ts-node src/scripts/import-drogasil.ts",
     "export:csv": "ts-node src/scripts/export-csv.ts",
-    
     "import:generic:products:csv": "ts-node src/scripts/import-generic-products-csv.ts",
     "import:generic:drogal": "ts-node src/scripts/import-generic-drogal.ts",
     "import:generic:drogasil": "ts-node src/scripts/import-generic-drogasil.ts",
-    "export:generic:products:csv": "ts-node src/scripts/export-generic-products-csv.ts"
+    "export:generic:products:csv": "ts-node src/scripts/export-generic-products-csv.ts",
+    "import:drogal:stock": "ts-node src/scripts/import-drogal-stock.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/typeorm": "^11.0.0",
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "pg": "^8.13.1",
