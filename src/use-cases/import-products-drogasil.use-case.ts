@@ -19,7 +19,7 @@ export class ImportProductsDrogasilUseCase {
 
   public async execute(generic = false): Promise<void> {
     const [products, baseProducts] = await Promise.all([
-      this.productRepository.findByOrigin(Origin.DROGAL),
+      this.productRepository.findByOrigin(Origin.DROGASIL),
       this.fetchBaseProducts(generic)
     ]);
 
