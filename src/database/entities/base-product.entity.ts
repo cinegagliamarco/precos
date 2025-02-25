@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseTypeormModel } from './base.typeorm-model';
 
 @Entity('base_product')

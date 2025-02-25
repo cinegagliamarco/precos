@@ -9,4 +9,12 @@ export class BaseProductRepository {
   public findAll(): Promise<BaseProductTypeormEntity[]> {
     return this.repository.find();
   }
+
+  public save(entity: BaseProductTypeormEntity): Promise<BaseProductTypeormEntity> {
+    return this.repository.save(entity);
+  }
+
+  public findAllDistinct(): Promise<{ ean: number }[]> {
+    return this.repository.createQueryBuilder('base_product').select('DISTINCT base_product.ean', 'ean').getRawMany();
+  }
 }

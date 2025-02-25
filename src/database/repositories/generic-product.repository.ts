@@ -9,4 +9,12 @@ export class GenericProductRepository {
   public async findAll(): Promise<GenericProductTypeormEntity[]> {
     return this.repository.find();
   }
+
+  public findAllDistinct(): Promise<{ ean: number }[]> {
+    return this.repository.createQueryBuilder('base_product').select('DISTINCT base_product.ean', 'ean').getRawMany();
+  }
+
+  public async save(entity: GenericProductTypeormEntity): Promise<GenericProductTypeormEntity> {
+    return this.repository.save(entity);
+  }
 }

@@ -25,6 +25,17 @@
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "ts-node",
       "program": "${workspaceFolder}/src/scripts/${input:scriptName}.ts"
-    }
+    },
+    {
+      "stopOnEntry": false,
+      "name": "Npm Start",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start"],
+      "skipFiles": ["<node_internals>/**", "node_modules/**"]
+    },
   ]
 }

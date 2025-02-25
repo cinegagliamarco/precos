@@ -35,7 +35,7 @@ export class ProductTypeormEntity extends BaseTypeormModel {
   @Column({ type: 'varchar', length: 255, nullable: true })
   public image: string;
 
-  @Column({ type: 'bigint', transformer: { to: (value: number) => value, from: (value: string) => Number(value) } })
+  @Column({ type: 'bigint', nullable: true, transformer: { to: (value: number) => value, from: (value: string) => Number(value) } })
   public sku: number;
 
   @Column({ type: 'int', default: 0, nullable: false, name: 'subsidiary_one_stock' })
