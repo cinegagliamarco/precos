@@ -2,6 +2,7 @@ import { Controller, Get, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ExportGenericProductsUseCase } from '../use-cases/export-generic-products.use-case';
 import { ExportProductsUseCase } from '../use-cases/export-products.use-case';
+import { ImportDrogalStockUseCase } from '../use-cases/import-drogal-stock.use-case';
 import { ImportProductsDrogalUseCase } from '../use-cases/import-products-drogal.use-case';
 import { ImportProductsDrogasilUseCase } from '../use-cases/import-products-drogasil.use-case';
 
@@ -11,7 +12,8 @@ export class ProductController {
     private readonly importProductsDrogalUseCase: ImportProductsDrogalUseCase,
     private readonly importProductsDrogasilUseCase: ImportProductsDrogasilUseCase,
     private readonly exportProductsUseCase: ExportProductsUseCase,
-    private readonly exportGenericProductsUseCase: ExportGenericProductsUseCase
+    private readonly exportGenericProductsUseCase: ExportGenericProductsUseCase,
+    private readonly importDrogalStockUseCase: ImportDrogalStockUseCase
   ) {}
 
   @Post('/import/drogasil')
@@ -22,6 +24,11 @@ export class ProductController {
   @Post('/import/drogal')
   public importDrogal() {
     return this.importProductsDrogalUseCase.execute();
+  }
+
+  @Post('/import/drogal/stock')
+  public importDrogalStock() {
+    return this.importDrogalStockUseCase.execute();
   }
 
   @Get('/export')
