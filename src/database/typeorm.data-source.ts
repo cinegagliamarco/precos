@@ -1,7 +1,7 @@
 import { parse } from 'pg-connection-string';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-const config = {
+const config: Record<string, unknown> = {
   type: 'postgres', // or mysql, sqlite, etc.
   host: 'localhost',
   port: 5432, // For PostgreSQL
@@ -10,7 +10,8 @@ const config = {
   database: 'products',
   migrations: [`${__dirname}/migrations/*.{ts,js}`],
   entities: [`${__dirname}/**/*.entity.{ts,js}`],
-  logging: true
+  logging: true,
+  ssl: false
 };
 
 if (process.env.DATABASE_URL) {
@@ -24,6 +25,7 @@ if (process.env.DATABASE_URL) {
   config.migrations = [`${__dirname}/migrations/*.{ts,js}`];
   config.entities = [`${__dirname}/**/*.entity.{ts,js}`];
   config.logging = false; // If not on heroku, log queries
+  config.ssl = { rejectUnauthorized: false };
 }
 
-export const TypeOrmDataSource = new DataSource(config as DataSourceOptions);
+export const TypeOrmDataSource = new DataSource(config as unknown as DataSourceOptions);
