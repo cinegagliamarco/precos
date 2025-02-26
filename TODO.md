@@ -1,3 +1,4 @@
-- [ ] Transformar os scripts em operações assíncronas de forma a não bloquear as requisições HTTP
-- [ ] Criar uma tabela de importações e controlar execução de importação para que o servidor não seja sobrecarregado
-- [ ] Remover scripts assim que HTTP server estiver funcionando
+- Transformar os scripts em operações assíncronas de forma a não bloquear as requisições HTTP
+- Criar uma tabela de importações e controlar execução de importação para que o servidor não seja sobrecarregado
+- Remover scripts assim que HTTP server estiver funcionando
+- Criar FE com deploy no Vercel
