@@ -10,7 +10,7 @@ export class ImportDrogalStockUseCase {
   constructor(private readonly productRepository: ProductRepository) {}
 
   public async execute(): Promise<void> {
-    const products = await this.productRepository.findByOrigin(Origin.DROGAL);
+    const products = await this.productRepository.findAvailableByOrigin(Origin.DROGAL);
 
     const workSize = 50;
     const tasks = [...products];

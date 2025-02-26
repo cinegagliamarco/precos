@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nodemon",
-    "start:prod": "node dist/main",
+    "start:dev": "nodemon",
+    "start": "node dist/main",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/database/typeorm.data-source.ts",
     "migration:generate": "npm run typeorm migration:generate src/database/migrations/$npm_config_name",
     "migration:run": "npm run typeorm migration:run",
@@ -31,6 +31,7 @@
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "pg": "^8.13.1",
+    "pg-connection-string": "^2.7.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20"

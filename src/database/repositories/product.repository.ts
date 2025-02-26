@@ -39,6 +39,10 @@ export class ProductRepository {
     return this.repository.find({ where: { origin } });
   }
 
+  public async findAvailableByOrigin(origin: Origin): Promise<ProductTypeormEntity[]> {
+    return this.repository.find({ where: { origin, exists: true, hasStock: true } });
+  }
+
   public async save(product: ProductTypeormEntity): Promise<ProductTypeormEntity> {
     return this.repository.save(product);
   }
